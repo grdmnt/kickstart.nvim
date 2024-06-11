@@ -252,6 +252,15 @@ require('lazy').setup({
   },
 
   {
+    'karb94/neoscroll.nvim',
+    config = function()
+      require('neoscroll').setup {
+        easing = 'quadratic',
+      }
+    end,
+  },
+
+  {
     'folke/zen-mode.nvim',
     opts = {
       -- your configuration comes here
@@ -261,6 +270,26 @@ require('lazy').setup({
     config = function()
       vim.keymap.set('n', '<leader>z', '<CMD>ZenMode<CR>', { desc = 'Toggle Zen Mode' })
     end,
+  },
+
+  {
+    'kdheepak/lazygit.nvim',
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
   },
 
   {
@@ -392,6 +421,13 @@ require('lazy').setup({
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
+          },
+          fzf = {
+            fuzzy = true, -- false will only do exact matching
+            override_generic_sorter = true, -- override the generic sorter
+            override_file_sorter = true, -- override the file sorter
+            case_mode = 'smart_case', -- or "ignore_case" or "respect_case"
+            -- the default case_mode is "smart_case"
           },
         },
       }
