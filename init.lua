@@ -671,6 +671,7 @@ require('lazy').setup({
       }
 
       require('lspconfig').rubocop.setup {}
+      require('lspconfig').eslint.setup {}
       require('lspconfig').ruby_lsp.setup {
         cmd = { 'ruby-lsp' },
       }
