@@ -675,6 +675,11 @@ require('lazy').setup({
       require('lspconfig').ruby_lsp.setup {
         cmd = { 'ruby-lsp' },
       }
+
+      require('lspconfig').sorbet.setup {
+        cmd = { 'srb', 'tc', '--lsp' },
+        filetypes = { 'ruby' },
+      }
     end,
   },
 

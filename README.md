@@ -12,6 +12,12 @@ A starting point for Neovim that is:
 
 ## Installation
 
+## Plugin Dependencies
+```
+npm i -g vscode-langservers-extracted
+brew install watchman
+```
+
 ### Install Neovim
 
 Kickstart.nvim targets *only* the latest
