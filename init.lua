@@ -190,6 +190,15 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+vim.o.foldcolumn = '1' -- '0' is not bad
+vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldmethod = 'indent'
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
+-- allows to create a new spec file for the current file
+vim.api.nvim_set_keymap('n', '<leader>ac', ":lua vim.cmd('e ' .. vim.fn.eval('rails#buffer().alternate()'))<CR>", { noremap = true, silent = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -291,6 +300,23 @@ require('lazy').setup({
       }
     end,
   },
+
+  {
+    'nvim-neotest/neotest',
+    lazy = true,
+    dependencies = {
+      'olimorris/neotest-rspec',
+    },
+    config = function()
+      require('neotest').setup {
+        adapters = {
+          require 'neotest-rspec',
+        },
+      }
+    end,
+  },
+
+  { 'tpope/vim-rails' },
 
   {
     'stevearc/oil.nvim',
@@ -642,7 +668,6 @@ require('lazy').setup({
       --
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
       -- and elegantly composed help section, `:help lsp-vs-treesitter`
-
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -797,11 +822,14 @@ require('lazy').setup({
         },
       }
 
-      require('lspconfig').rubocop.setup {}
+      require('lspconfig').rubocop.setup {
+        cmd = { 'bundle', 'exec', 'rubocop', '--lsp' },
+        -- cmd = { os.getenv 'HOME' .. '/.asdf/shims/rubocop', '--lsp' },
+      }
       require('lspconfig').eslint.setup {}
       require('lspconfig').tsserver.setup {}
       require('lspconfig').ruby_lsp.setup {
-        cmd = { 'ruby-lsp' },
+        cmd = { os.getenv 'HOME' .. '/.asdf/shims/ruby-lsp' },
       }
 
       require('lspconfig').sorbet.setup {
