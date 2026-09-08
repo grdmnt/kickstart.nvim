@@ -461,6 +461,8 @@ require('lazy').setup({
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
+    -- v3 replaced register() with a new add() spec; this config uses register().
+    version = '^2',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
       require('which-key').setup()
@@ -773,8 +775,8 @@ require('lazy').setup({
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        -- But for many setups, the LSP (`ts_ls`) will work just fine
+        -- ts_ls = {},
         --
 
         lua_ls = {
@@ -793,6 +795,13 @@ require('lazy').setup({
         },
       }
 
+      -- Broadcast the completion capabilities above to every server.
+      vim.lsp.config('*', { capabilities = capabilities })
+
+      for server, config in pairs(servers) do
+        vim.lsp.config(server, config)
+      end
+
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
       --  other tools, you can run
@@ -809,33 +818,28 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-      require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
+      -- Enables whatever Mason has installed; the `servers` table above supplies
+      -- each one's configuration.
+      require('mason-lspconfig').setup()
 
-      require('lspconfig').rubocop.setup {
+      -- Servers that come from the project rather than from Mason: these run out
+      -- of the bundle or the language's own toolchain, so only the command differs
+      -- from the defaults nvim-lspconfig ships.
+      vim.lsp.config('rubocop', {
         cmd = { 'bundle', 'exec', 'rubocop', '--lsp' },
         -- cmd = { os.getenv 'HOME' .. '/.asdf/shims/rubocop', '--lsp' },
-      }
-      require('lspconfig').eslint.setup {}
-      require('lspconfig').tsserver.setup {}
-      require('lspconfig').ruby_lsp.setup {
-        cmd = { os.getenv 'HOME' .. '/.asdf/shims/ruby-lsp' },
-      }
+      })
 
-      require('lspconfig').sorbet.setup {
+      vim.lsp.config('ruby_lsp', {
+        cmd = { os.getenv 'HOME' .. '/.asdf/shims/ruby-lsp' },
+      })
+
+      vim.lsp.config('sorbet', {
         cmd = { 'srb', 'tc', '--lsp' },
         filetypes = { 'ruby' },
-      }
+      })
+
+      vim.lsp.enable { 'rubocop', 'ruby_lsp', 'sorbet', 'eslint', 'ts_ls' }
     end,
   },
 
@@ -1041,6 +1045,9 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- The default branch is now the `main` rewrite, which dropped the
+    -- `nvim-treesitter.configs` module this config calls below.
+    branch = 'master',
     build = ':TSUpdate',
     opts = {
       ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
