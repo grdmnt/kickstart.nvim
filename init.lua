@@ -305,12 +305,15 @@ require('lazy').setup({
     'nvim-neotest/neotest',
     lazy = true,
     dependencies = {
+      'nvim-neotest/nvim-nio',
       'olimorris/neotest-rspec',
+      'fredrikaverpil/neotest-golang',
     },
     config = function()
       require('neotest').setup {
         adapters = {
           require 'neotest-rspec',
+          require 'neotest-golang',
         },
       }
     end,
@@ -767,7 +770,23 @@ require('lazy').setup({
         -- rubocop = {},
         -- ruby_lsp = {},
         -- clangd = {},
-        -- gopls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              staticcheck = true,
+              usePlaceholders = true,
+              completeUnimported = true,
+              analyses = { unusedparams = true, shadow = true },
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                constantValues = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+            },
+          },
+        },
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -815,6 +834,8 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'goimports', -- Go: sorts and adds missing imports
+        'gofumpt', -- Go: stricter gofmt
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -831,7 +852,8 @@ require('lazy').setup({
       })
 
       vim.lsp.config('ruby_lsp', {
-        cmd = { os.getenv 'HOME' .. '/.asdf/shims/ruby-lsp' },
+        -- cmd = { os.getenv 'HOME' .. '/.asdf/shims/ruby-lsp' },
+        cmd = { 'bundle', 'exec', 'ruby-lsp' },
       })
 
       vim.lsp.config('sorbet', {
@@ -870,6 +892,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        go = { 'goimports', 'gofumpt' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -1050,7 +1073,7 @@ require('lazy').setup({
     branch = 'master',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'go', 'gomod', 'gosum', 'gowork', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
