@@ -7,6 +7,19 @@ vim.g.maplocalleader = ','
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
 
+-- No plugins here are remote plugins, so skip the language providers.
+--  Copilot runs its own Node process and does not need the Node provider.
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+
+-- Go templates, so gopls attaches to them
+vim.filetype.add {
+  extension = { gotmpl = 'gotmpl' },
+  pattern = { ['.*%.go%.tmpl'] = 'gotmpl' },
+}
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!

@@ -35,7 +35,11 @@ return {
 
       -- You can provide additional configuration to the handlers,
       -- see mason-nvim-dap README for more information
-      handlers = {},
+      handlers = {
+        -- nvim-dap-go sets up Go debugging below. mason-nvim-dap's own delve
+        -- adapter looks up `dlv` before Mason puts it on PATH, leaving it unusable.
+        delve = function() end,
+      },
 
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)

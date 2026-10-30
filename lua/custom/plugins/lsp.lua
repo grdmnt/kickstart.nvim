@@ -226,9 +226,13 @@ return {
         cmd = { 'bundle', 'exec', 'ruby-lsp' },
       })
 
+      -- Sorbet comes from the project's bundle, so only start it in projects
+      -- that have been set up for it
       vim.lsp.config('sorbet', {
-        cmd = { 'srb', 'tc', '--lsp' },
+        cmd = { 'bundle', 'exec', 'srb', 'tc', '--lsp' },
         filetypes = { 'ruby' },
+        root_markers = { 'sorbet/config' },
+        workspace_required = true,
       })
 
       vim.lsp.enable { 'rubocop', 'ruby_lsp', 'sorbet' }
